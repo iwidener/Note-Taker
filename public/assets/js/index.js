@@ -17,6 +17,9 @@ var getNotes = function() {
 
 // A function for saving a note to the db
 var saveNote = function(note) {
+  var currentURL = window.location.origin;
+  console.log("URL: " + currentURL + "/api/tables");
+  console.log(data);
   return $.ajax({
     url: "/api/notes",
     data: note,
