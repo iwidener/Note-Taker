@@ -11,3 +11,5 @@ It is a convenient application for users to keep track of their information and 
 * Application allows users to create and save the notes. <br>
 * Application allows users to view previously saved notes.<br>
 * Application allows users to delete previously saved notes. <br>
+
+### A link to the deployed application: https://iwidener.github.io/Note-Taker/ <br> 
