@@ -24,6 +24,11 @@ module.exports = function (app) {
         return res.json(false);
     });
 
+    app.delete("/api/notes/:id", function(req, res) {
+        console.log("route");
+        notesData.deleteOne(req.params.id).then(response => res.json(response));
+    });
+
     app.post("/api/clear", function (req, res) {
         notesData.length = 0;
         res.json({ ok: true });
