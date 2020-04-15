@@ -17,7 +17,11 @@ class Store {
             console.log(notes);
             let notesArray = JSON.parse(notes);
             console.log(notesArray);
-            note.id = notesArray[0].id + 1;
+            if(notesArray.length > 0) {
+                note.id = notesArray[0].id + 1;
+            } else {
+                note.id = 1;
+            }
             notesArray.unshift(note);
             return notesArray;
         }).then(notesArray => writeFileAsync(path.join(__dirname, "../db/db.json"), JSON.stringify(notesArray))

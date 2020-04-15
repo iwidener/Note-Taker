@@ -26,8 +26,9 @@ var saveNote = function (note) {
 
 // A function for deleting a note from the db
 var deleteNote = function (id) {
+  console.log('deleteNote')
   return $.ajax({
-    url: "api/notes/" + id,
+    url: "/api/notes/" + id,
     method: "DELETE"
   });
 };
@@ -68,6 +69,8 @@ var handleNoteDelete = function (event) {
   // prevents the click listener for the list from being called when the button inside of it is clicked
   event.stopPropagation();
 
+  console.log('DELETE NOTE')
+
   var note = $(this)
     .parent(".list-group-item")
     .data();
@@ -79,7 +82,7 @@ var handleNoteDelete = function (event) {
   deleteNote(note.id).then(function () {
     getAndRenderNotes();
     renderActiveNote();
-  });
+  }).catch(err => console.log('ERROR', err));
 };
 
 // Sets the activeNote and displays it
@@ -106,6 +109,7 @@ var handleRenderSaveBtn = function () {
 
 // Render's the list of note titles
 var renderNoteList = function (notes) {
+  console.log('RENDER!')
   $noteList.empty();
   console.log(notes);
   var noteListItems = [];
@@ -128,6 +132,7 @@ var renderNoteList = function (notes) {
 
 // Gets notes from the db and renders them to the sidebar
 var getAndRenderNotes = function () {
+  console.log('GET AND RENDER')
   return getNotes().then(function (data) {
     renderNoteList(data);
   });
