@@ -15,17 +15,25 @@ class Store {
     writeOne(note) {
         return this.getAll().then(notes => {
             console.log(notes);
-            let notesArray = JSON.parse(notes);
+            let notesArray;
+            try {
+                notesArray = JSON.parse(notes);
+            } catch{
+                notesArray = [];
+            }
+
             console.log(notesArray);
-            if(notesArray.length > 0) {
-                note.id = notesArray[0].id + 1;
-            } else {
-                note.id = 1;
+            if (!note.id) {
+                if (notesArray.length > 0) {
+                    note.id = notesArray[0].id + 1;
+                } else {
+                    note.id = 1;
+                }
             }
             notesArray.unshift(note);
-            return notesArray;
+            return notesArray.sort((a, b) => (a.id > b.id) ? -1: 1)
         }).then(notesArray => writeFileAsync(path.join(__dirname, "../db/db.json"), JSON.stringify(notesArray))
-        );
+        ).then(() => note);
     }
 
     deleteOne(id) {
@@ -33,12 +41,14 @@ class Store {
             let notesArray = JSON.parse(notes);
             let newNotesArray = notesArray.filter(note => note.id != id);
             console.log(newNotesArray);
-            writeFileAsync(path.join(__dirname, "../db/db.json"), JSON.stringify(newNotesArray));
-        });
+            return newNotesArray;
+        }).then(newNotesArray => writeFileAsync(path.join(__dirname, "../db/db.json"), JSON.stringify(newNotesArray)));
+
     }
 
-    updateOne() {
-
+    updateOne(id, note) {
+        return this.deleteOne(id)
+            .then(() => this.writeOne(note))
     }
 }
 
