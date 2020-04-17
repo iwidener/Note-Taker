@@ -33,6 +33,15 @@ var deleteNote = function (id) {
   });
 };
 
+//Update the note
+var updateNote = function (id) {
+  console.log("update a note");
+  return $.ajax({
+    url: "/api/notes/" + id,
+    method: "PUT"
+  });
+};
+
 // If there is an activeNote, display it, otherwise render empty inputs
 var renderActiveNote = function () {
   $saveNoteBtn.hide();
