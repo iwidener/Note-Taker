@@ -3,9 +3,11 @@ var $noteText = $(".note-textarea");
 var $saveNoteBtn = $(".save-note");
 var $newNoteBtn = $(".new-note");
 var $noteList = $(".list-container .list-group");
+var $noteEdit = $(".edit-note");
 
 // activeNote is used to keep track of the note in the textarea
 var activeNote = {};
+var editNote = false;
 
 // A function for getting all notes from the db
 var getNotes = function () {
@@ -34,19 +36,21 @@ var deleteNote = function (id) {
 };
 
 //Update the note
-var updateNote = function (id) {
+var updateNote = function (note) {
   console.log("update a note");
   return $.ajax({
-    url: "/api/notes/" + id,
-    method: "PUT"
+    url: "/api/notes/" + note.id,
+    method: "PUT",
+    data: note
   });
 };
 
 // If there is an activeNote, display it, otherwise render empty inputs
 var renderActiveNote = function () {
   $saveNoteBtn.hide();
+  $noteEdit.show();
 
-  if (activeNote.id) {
+  if (activeNote.id && !editNote) {
     $noteTitle.attr("readonly", true);
     $noteText.attr("readonly", true);
     $noteTitle.val(activeNote.title);
@@ -54,8 +58,8 @@ var renderActiveNote = function () {
   } else {
     $noteTitle.attr("readonly", false);
     $noteText.attr("readonly", false);
-    $noteTitle.val("");
-    $noteText.val("");
+    $noteTitle.val(activeNote.title || "");
+    $noteText.val(activeNote.text || "");
   }
 };
 
@@ -66,11 +70,23 @@ var handleNoteSave = function () {
     text: $noteText.val()
   };
 
-  saveNote(newNote).then(function (data) {
-    console.log(data);
-    getAndRenderNotes();
-    renderActiveNote();
-  });
+  if (editNote) {
+    newNote.id = activeNote.id;
+    updateNote(newNote)
+      .then(function (data) {
+        console.log(data);
+        getAndRenderNotes();
+        renderActiveNote();
+        editNote = false;
+      })
+  }
+  else {
+    saveNote(newNote).then(function (data) {
+      console.log(data);
+      getAndRenderNotes();
+      renderActiveNote();
+    });
+  }
 };
 
 // Delete the clicked note
@@ -83,7 +99,7 @@ var handleNoteDelete = function (event) {
   var note = $(this)
     .parent(".list-group-item")
     .data();
-
+    console.log(note);
   if (activeNote.id === note.id) {
     activeNote = {};
   }
@@ -147,12 +163,19 @@ var getAndRenderNotes = function () {
   });
 };
 
+var handleNoteEdit = function () {
+  console.log("Notes edit");
+  editNote = true;
+  renderActiveNote();
+};
+
 $saveNoteBtn.on("click", handleNoteSave);
 $noteList.on("click", ".list-group-item", handleNoteView);
 $newNoteBtn.on("click", handleNewNoteView);
 $noteList.on("click", ".delete-note", handleNoteDelete);
 $noteTitle.on("keyup", handleRenderSaveBtn);
 $noteText.on("keyup", handleRenderSaveBtn);
+$noteEdit.on("click", handleNoteEdit);
 
 // Gets and renders the initial list of notes
 getAndRenderNotes();

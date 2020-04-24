@@ -38,6 +38,7 @@ module.exports = function (app) {
     });
 
     app.put("/api/notes/:id", function(req, res) {
+        console.log(req.body);
         notesData.updateOne(req.params.id, req.body).then(response => {res.send(true)})
     });
 
